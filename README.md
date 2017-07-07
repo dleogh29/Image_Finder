@@ -8,3 +8,5 @@
   - getty image API
   - bulma v0.4.2
   - jQuery v2.1.1
+
+* 링크 : [Keyword Image Finder](https://dleogh29.github.io/hackathon/)
