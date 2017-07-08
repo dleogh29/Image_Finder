@@ -14,8 +14,23 @@ var ImageFinder = (function(global, $) {
     var slice = Array.prototype.slice;
     // var url = 'https://api.gettyimages.com/v3/search/images';
     // var api_key = '32a6uu5rmr37aqrzyeq335wv';
-    var api_info = {};
+    var request_settings = {
+        type : 'GET',
+        url : null,
+        headers : {
+            'Api-Key' : null
+        },
+        data : null
+        // data : {
+        //     phrase : 'run',
+        //     fields : 'detail_set',
+        //     number_of_people : ['two'],
+        //     page : 1,
+        //     page_size: 5
+        // }
+    };
     var images = [];
+    var is_initialized = false;
 
     var type = function(data) {
         return toString.call(data).slice(8, -1).toLowerCase();
@@ -72,27 +87,24 @@ var ImageFinder = (function(global, $) {
         }
     }
     var init = function(info) {
-        mixin(api_info, info);
+        if(info.url && info.api_key) {
+            request_settings.url = info.url;
+            request_settings.headers['Api-Key'] = info.api_key;
+            is_initialized = true;
+        } else {
+            throw 'api 초기화 정보가 올바르지 않습니다.';
+        }
     }
-    var getImageData = function(data, callback) {
-        $.ajax({
-            type : 'GET',
-            url : api_info.url,
-            headers : {
-                "Api-Key" : api_info.api_key
-            },
-            data : data
-            // data : {
-            //     phrase : "run",
-            //     fields : "detail_set",
-            //     number_of_people : ['two'],
-            //     page : 1,
-            //     page_size: 5
-            // }
-        }).done(function(data) {
-            // console.log('data:', data);
-            images = data.images;
-            callback(data.images, data.result_count);
+    var setOption = function(option) {
+        request_settings.data = option;
+    }
+    var getImageData = function(callback, is_more) {
+        console.log('request_settings:', request_settings);
+        $.ajax(request_settings).done(function(data) {
+            var image_array = data.images;
+            images = is_more ? images.concat(image_array) : image_array;
+            console.log('images:', images);
+            callback(image_array, data.result_count);
         });
     }
     var id = function(id) {
@@ -100,32 +112,39 @@ var ImageFinder = (function(global, $) {
         images.forEach(function(item) {
             (id === item.id) && (selected_item = item);
         });
-
         return selected_item;
     }
-
     var renderImage = function() {
 
     }
 
-    function ImageFinder(arg) {
+    function ImageFinder(arg1, arg2) {
         if(!(this instanceof ImageFinder)) {
-            return new ImageFinder(arg);
+            return new ImageFinder(arg1, arg2);
         }
 
-        if(!arg) {
+        if(arg1 === 'init' && isType(arg2, 'object')) {
+            init(arg2);
             return this;
         }
 
-        if(isType(arg, 'object')) {
-            init(arg);
-            return this;
+        if(is_initialized) {
+            if(isType(arg1, 'string')) {
+                return id(arg1);
+            }
+
+            if(isType(arg1, 'object')) {
+                setOption(arg1);
+                return this;
+            }
+        } else {
+            throw '초기화를 반드시 해야합니다.';
         }
+
     }
     ImageFinder.prototype = {
         constructor : ImageFinder,
         getImageData : getImageData,
-        id : id
     }
     ImageFinder.include = function(obj) {
         mixin(ImageFinder, obj);
