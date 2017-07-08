@@ -33,18 +33,12 @@
 }
 
 .card-list a {
-    border-radius: 2px;
-    color: #4a4a4a;
     display: block;
     padding: 0.3em 0.4em;
 }
 
-.card-list a:hover {
-    background-color: whitesmoke;
-    color: #00d1b2;
-}
-
-.card-list a:hover .image {
+.card-list a:hover .image,
+.card-list a:focus .image {
     transform: scale(1.1);
 }
 
@@ -72,7 +66,7 @@
     width: 100%;
 }
 .condition-list {
-    padding-top: 10px;
+    padding: 10px 0;
 }
 .condition-list.is-active {
     display:block;
@@ -97,15 +91,17 @@
     padding: 3px;
     margin-right: 3px;
 }
+.condition-list [type="checkbox"]:hover+label,
+.condition-list [type="checkbox"]:focus+label {
+    border: 1px solid #00d1b2;
+}
 
 
 .modal .modal-content img {
     position: absolute;
     width: auto;
     height: auto;
-    /*max-height: calc(100vh - 40px);
-    max-width: 100vw;*/
-        max-height: 100%;
+    max-height: 100%;
     max-width: 100%;
     top: 50%;
     left: 50%;
@@ -182,18 +178,24 @@
     margin-bottom: 5px;
 }
 .select-wrap {
-    padding: 0 0 5px 0;
     height: 33px;
+    padding: 0;
     transition: all 1s;
     overflow: hidden;
 }
 .select-wrap.is-active {
-    height: 180px;
+    height: 190px;
 }
 .select-wrap button {
+    box-sizing: border-box;
     display: block;
-    padding-top: 10px;
+    padding: 8px;
+    height: 33px;
     width: 100%;
+}
+.select-wrap .is-white:hover,
+.select-wrap .is-white:focus {
+    background: whitesmoke;
 }
 .search-form {
     position: relative;
@@ -226,6 +228,12 @@
         font-size:12px;
     }
     .select-wrap.is-active {
-        height: 150px;
+        height: 155px;
+    }
+    .select-wrap {
+        height: 25px;
+    }
+    .select-wrap button {
+        height: 25px;
     }
 }

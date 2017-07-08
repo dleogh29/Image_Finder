@@ -99,7 +99,7 @@
             
             template +=
                 '<li>' +
-                    '<a role="tab">' +
+                    '<a href="">' +
                         '<figure class="image is-2by1 ' + fit_info.figure_class + '">' +
                             '<img class="' + fit_info.img_class + '" data-id="' + image.id + '" src="'
                              + image.display_sizes[2].uri + '" alt="' + image.title + '">' +
@@ -158,7 +158,7 @@
 
             template +=
                 '<li>' +
-                    '<a role="tab">' +
+                    '<a href="">' +
                         '<figure class="image is-2by1 ' + fit_info.figure_class + '">' +
                             '<img class="' + fit_info.img_class + '" data-id="' + image.id + '" src="'
                              + image.display_sizes[2].uri + '" alt="' + image.title + '">' +
@@ -183,6 +183,7 @@
         }, true);
     }
     var renderMainImage = function(e) {
+        e.preventDefault();
         e.stopPropagation();
         var target = e.target;
         var nodeName = target.nodeName.toLowerCase();
