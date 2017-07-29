@@ -6,7 +6,7 @@
 * 사용 기술
   - getty image API
   - bulma v0.4.2
-  - jQuery v2.1.1
+  - HTML, CSS, Javascript
 
 * getty image API
   - [search API](http://developers.gettyimages.com/api/docs/v3/search/images/get/)
