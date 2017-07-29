@@ -6,10 +6,18 @@
         throw 'imageFinder.js 모듈을 먼저 로드해야 합니다.';
     }
     
+    // ——————————————————————————————————————
+    // API 주소 및 key 세팅
+    // ——————————————————————————————————————
     var api_info = {
+        type: 'GET',
         url : 'https://api.gettyimages.com/v3/search/images',
         api_key : '32a6uu5rmr37aqrzyeq335wv'
     }
+
+    // ——————————————————————————————————————
+    // 검색 필터 기본 세팅
+    // ——————————————————————————————————————
     var default_option = {
         fields : "detail_set",
         sort_order : "best_match",
@@ -18,11 +26,18 @@
         // orientations : "Vertical",
         // number_of_people : "one,two,group",
     }
+
+    // ——————————————————————————————————————
+    // 변수 선언
+    // ——————————————————————————————————————
     var current_option = {};
     var document = global.document;
     var content_wrap, search_form, text_field, card_list_wrap, modal_wrap, modal_close, content_wrap;
     var select_wrap, condition_list, form_paragraph, message_box;
 
+    // ——————————————————————————————————————
+    // 사용자 메시지 안내
+    // ——————————————————————————————————————
     var showMessage = function(msg, is_error) {
         message_box.innerHTML = msg;
         message_box.classList.add('is-active');
@@ -34,32 +49,19 @@
             throw msg;
         }
     }
+
+    // ——————————————————————————————————————
+    // 검색어 validation 체크(공백 체크)
+    // ——————————————————————————————————————
     var inputValidation = function(input) {
         if(input.trim() === '') {
             showMessage('검색어를 입력해주세요', true);   
         }
     }
-    // <li>
-    //     <a role="tab" class="is-active">
-    //         <figure class="image is-2by1">
-    //             <img src="http://bulma.io/images/placeholders/640x320.png" alt="Image">
-    //         </figure>
-    //
-    //     </a>
-    // </li>
 
-    var fitImage = function(image) {
-        var width = image.max_dimensions.width;
-        var height = image.max_dimensions.height;
-        var class_name = "fit-width";
-        // 썸네일 이미지를 담는 박스 크기 width:height = 16:9
-        // 이미지 원본의 width 값을 16:9 비율로 계산했을 때 height 값을 계산
-        // 기대되는 height 값보다 이미지 원본의 height 값이 작을 경우 height기준으로 박스에 담는다
-        if((width * 9 / 16) > height) {
-            class_name = "fit-height";
-        }
-        return class_name;
-    }
+    // ——————————————————————————————————————————————————————————
+    // Vertical, Horizontal 방향 이미지별 이미지 박스에 맞추는 작업
+    // ——————————————————————————————————————————————————————————
     var fitImage = function(image, orientations) {
         var img_class = '';
         var figure_class = '';
@@ -92,6 +94,10 @@
         }
         return fit_info;
     }
+
+    // ——————————————————————————————————————
+    // 이미지 리스트 render
+    // ——————————————————————————————————————
     var renderImageList = function(images, orientations) {
         var template = '<ul class="card-list is-clearfix">';
         images.forEach(function(image) {
@@ -112,7 +118,11 @@
         card_list_wrap.innerHTML = template;
         card_list_wrap.classList.add('card');
     }
-    var getAdditionalOption = function() {
+
+    // ——————————————————————————————————————
+    // 검색 옵션 객체화
+    // ——————————————————————————————————————
+    var getSearchOption = function() {
         var checked_box = select_wrap.querySelectorAll('input[type="checkbox"]:checked');
         var obj = {};
         ImageFinder.each(checked_box, function(checkbox) {
@@ -126,6 +136,10 @@
 
         return obj;
     }
+
+    // ——————————————————————————————————————
+    // 이미지 검색
+    // ——————————————————————————————————————
     var searchImages = function(e) {
         e.preventDefault();
 
@@ -139,7 +153,7 @@
             phrase : phrase,
             page : 1
         };
-        var add_option = getAdditionalOption();
+        var add_option = getSearchOption();
         ImageFinder.mixin(current_option, default_option, add_option);
 
         form_paragraph.classList.add('is-loading');
@@ -151,6 +165,10 @@
             renderImageList(images, current_option.orientations);
         });
     }
+
+    // ——————————————————————————————————————
+    // 이미지 리스트 render(추가 검색시)
+    // ——————————————————————————————————————
     var renderMoreImageList = function(images, orientations) {
         var template = '';
         images.forEach(function(image) {
@@ -172,6 +190,10 @@
         card_list.appendChild(temp);
         card_list.lastChild.outerHTML = template;
     }
+
+    // ——————————————————————————————————————
+    // 이미지 추가 검색(more 버튼 클릭시)
+    // ——————————————————————————————————————
     var searchMoreImages = function(button) {
         current_option.page++;
         button.classList.add('is-loading');
@@ -181,7 +203,11 @@
             // console.log('images:', images);
             renderMoreImageList(images, current_option.orientations);
         }, true);
-    }
+    };
+
+    // ——————————————————————————————————————
+    // 모달 팝업 이미지 render
+    // ——————————————————————————————————————
     var renderMainImage = function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -197,14 +223,26 @@
             searchMoreImages(e.target);
         }
     }
+
+    // ——————————————————————————————————————
+    // 모달닫기
+    // ——————————————————————————————————————
     var closeModal = function() {
         modal_wrap.classList.remove('is-active');
     }
+
+    // ——————————————————————————————————————
+    // 필터 옵션 접기/펼치기
+    // ——————————————————————————————————————
     var filterFold = function(e) {
         var target = e.target;
         target.classList.contains('button') &&
             select_wrap.classList.toggle('is-active');
     }
+    
+    // ——————————————————————————————————————
+    // 리스너 설정
+    // ——————————————————————————————————————
     var setListener = function() {
         search_form.querySelector('button');
         search_form.addEventListener('submit', searchImages);
@@ -212,6 +250,10 @@
         modal_close.addEventListener('click', closeModal);
         select_wrap.addEventListener('click', filterFold)
     }
+
+    // ——————————————————————————————————————
+    // 변수 초기화 및 API 정보 세팅
+    // ——————————————————————————————————————
     var init = function() {
         content_wrap = document.querySelector('.content-wrap');
         search_form = content_wrap.querySelector('.search-form');
